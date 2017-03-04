@@ -29,7 +29,7 @@ extern	syscall	close(did32);
 extern	syscall	control(did32, int32, int32, int32);
 
 /* in file create.c */
-extern	pid32	create(void *, uint32, char *, uint32, ...);
+extern	pid32	create(void *, uint32, pri16, char *, uint32, ...);
 
 /* in file ctxsw.S */
 extern	void	ctxsw(void *, void *);
@@ -38,7 +38,7 @@ extern	void	ctxsw(void *, void *);
 extern	uint32	dot2ip(char *, uint32 *);
 
 /* in file queue.c */
-extern	pid32	enqueue(pid32, struct queue *q);
+extern	pid32	enqueue(pid32, struct queue *q, int32 key);	//TODO
 
 /* in file intutils.S */
 extern	intmask	disable(void);
@@ -58,7 +58,7 @@ extern  void exception(int32, int32*);
 extern	syscall	freebuf(char *);
 
 /* in file freemem.c */
-extern	syscall	free2(void *, uint32);
+extern	syscall	free(void *, uint32);
 extern	syscall	freemem(char *, uint32);
 
 /* in file getbuf.c */
@@ -187,7 +187,7 @@ extern	syscall	ptreset(int32, int32);
 extern	syscall	ptsend(int32, umsg32);
 
 /* in file putc.c */
-extern	syscall	putc2(did32, char);
+extern	syscall	putc(did32, char);
 
 /* in file read.c */
 extern	syscall	read(did32, char *, uint32);
@@ -206,6 +206,7 @@ extern	umsg32	recvtime(int32);
 
 /* in file resched.c */
 extern	void	resched(void);
+extern	void	sched_age(struct queue *, pid32, pid32);
 
 /* in file intutils.S */
 extern	void	restore(intmask);
