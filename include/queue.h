@@ -34,6 +34,8 @@ struct qentry
 	// TODO - other members
 	struct qentry *prev;
 	struct qentry *next;
+
+	int32 key;
 	
 };
 
