@@ -1,8 +1,8 @@
 /* queue.c - enqueue, dequeue, isempty, nonempty, et al. */
 
 #include <xinu.h>
-//#include "../include/xinu.h"
-//#include "../include/stdio.h"
+// #include "../include/xinu.h"
+// #include "../include/stdio.h"
 #include <stdlib.h>
 
 /**
@@ -18,10 +18,14 @@ void	printqueue(struct queue *q)
 		return;
 	}
 	struct qentry *toPrint = q->head;
+
 	kprintf("[(pid=p%d)",toPrint->process_id);
+
 	toPrint = toPrint->next;
 	while(toPrint != NULL){
+
 		kprintf(", (pid=p%d)",toPrint->process_id);
+
 		toPrint = toPrint->next;
 	}
 	kprintf("]\n");
@@ -77,7 +81,7 @@ bool8	isfull(struct queue *q)
  *
  * @return pid on success, SYSERR otherwise
  */
-pid32 enqueue(pid32 pid, struct queue *q)
+pid32 enqueue(pid32 pid, struct queue *q, int32 key)
 {
         // check if queue is full and if pid is illegal, and return SYSERR if either is true
 	if (isfull(q) || isbadpid(pid)){
@@ -89,6 +93,7 @@ pid32 enqueue(pid32 pid, struct queue *q)
 	struct qentry *new_qentry = malloc(sizeof(struct qentry));
         // initialize the new QEntry
 	new_qentry->process_id = pid;
+	new_qentry->key = key;
 
 	// insert into tail of queue
 	if(q->size == 0){
@@ -96,9 +101,38 @@ pid32 enqueue(pid32 pid, struct queue *q)
 		q->head = new_qentry;
 	}
 	else{
-		new_qentry->prev = q->tail;
-		q->tail->next = new_qentry;
-		q->tail = new_qentry;
+		// compare keys
+		struct qentry *toCompare = q->head;
+
+		// loop through the entries in the queue, compare the keys
+		while(toCompare!=NULL){
+			// if we've found a key with a higher priority, let's insert it
+			if (toCompare->key < key) {
+
+				// we've found that they key needs to be inserted...
+				// check if toCompare is head
+				if (toCompare == q->head){
+					// TODO - insert new_qentry into head
+					new_qentry->next = q->head;
+					q->head->prev = new_qentry;
+					q->head = new_qentry; 
+				} else {
+					// TODO - insert new_qentry into body
+					new_qentry->next = toCompare;
+					new_qentry->prev = toCompare->prev;
+					toCompare->prev->next = new_qentry;
+					toCompare->prev = new_qentry;
+				}
+			}
+			// if we're at the last entry
+			if (toCompare == q-> tail && key <= q->tail->key) {
+				// TODO - new_qentry becomes new tail
+				new_qentry->prev = q->tail;
+				q->tail->next = new_qentry;
+				q->tail = new_qentry;
+			}
+			toCompare = toCompare->next;
+		}
 	}
 	q->size++;
 	return pid;
@@ -132,7 +166,7 @@ pid32 dequeue(struct queue *q)
 	}
 
         // free up the space on the heap
-	free(old_head);
+	free(old_head, sizeof(old_head));
 	q->size--;
 	return return_pid;
 }
@@ -204,7 +238,7 @@ pid32	getlast(struct queue *q)
 	}
 
         //free up the space on the heap
-	free(old_tail);
+	free(old_tail, sizeof(old_tail));
 	q->size--;
 	return return_pid;
 }
@@ -241,7 +275,7 @@ pid32	remove(pid32 pid, struct queue *q)
 			if(checking->process_id == pid){
 				checking->prev->next = checking->next;
 				checking->next->prev = checking->prev;
-				free(checking);
+				free(checking, sizeof(checking));
 				return pid;
 			}
 			checking = checking->next;	
@@ -259,66 +293,66 @@ int main(){
 	//enqueue(pid32 pid, struct queue *q)
 	
 	printqueue(&my_queue);
-	enqueue(1, &my_queue);
+	enqueue(1, &my_queue, 1);
 	printqueue(&my_queue);
-	enqueue(3, &my_queue);
+	enqueue(3, &my_queue, 2);
 	printqueue(&my_queue);
-	dequeue(&my_queue);
-	printqueue(&my_queue);
-	dequeue(&my_queue);
-	dequeue(&my_queue);
-	dequeue(&my_queue);
-	printqueue(&my_queue);
+	// dequeue(&my_queue);
+	// printqueue(&my_queue);
+	// dequeue(&my_queue);
+	// dequeue(&my_queue);
+	// dequeue(&my_queue);
+	// printqueue(&my_queue);
 	
 	
 
 
-	enqueue(1, &my_queue);
+	enqueue(1, &my_queue, 3);
 	printqueue(&my_queue);
-	remove(1,&my_queue);
-	printqueue(&my_queue);
+	// remove(1,&my_queue);
+	// printqueue(&my_queue);
 
-	enqueue(1, &my_queue);
-	enqueue(2, &my_queue);
-	printqueue(&my_queue);
+	// enqueue(1, &my_queue);
+	// enqueue(2, &my_queue);
+	// printqueue(&my_queue);
 
-	remove(1,&my_queue);
-	printqueue(&my_queue);
+	// remove(1,&my_queue);
+	// printqueue(&my_queue);
 
-	enqueue(1, &my_queue);
-	enqueue(3, &my_queue);
-	printqueue(&my_queue);
+	// enqueue(1, &my_queue);
+	// enqueue(3, &my_queue);
+	// printqueue(&my_queue);
 
-	remove(2,&my_queue);
-	printqueue(&my_queue);
+	// remove(2,&my_queue);
+	// printqueue(&my_queue);
 
 	//struct qentry *returned_qentry = getbypid(4, &my_queue);
 	//printf("\nreturned qentry pid : %p\n", returned_qentry);
 
 	
 	
-	dequeue(&my_queue);
+	// dequeue(&my_queue);
 	
-	enqueue(2, &my_queue);
-	//enqueue(3, &my_queue);
-	printqueue(&my_queue);
-	dequeue(&my_queue);
-	dequeue(&my_queue);
-	dequeue(&my_queue);
+	// enqueue(2, &my_queue);
+	// //enqueue(3, &my_queue);
+	// printqueue(&my_queue);
+	// dequeue(&my_queue);
+	// dequeue(&my_queue);
+	// dequeue(&my_queue);
 
 	
-	//printqueue(&my_queue);
+	// //printqueue(&my_queue);
 
-	//printf("\nhead : %d\n", my_queue.head->process_id);
-	// call printqueue()
-	//printqueue(&my_queue);
+	// //printf("\nhead : %d\n", my_queue.head->process_id);
+	// // call printqueue()
+	// //printqueue(&my_queue);
 	
-	dequeue(&my_queue);
-	printqueue(&my_queue);
-	dequeue(&my_queue);
-	printqueue(&my_queue);
-	dequeue(&my_queue);
-	printqueue(&my_queue);
+	// dequeue(&my_queue);
+	// printqueue(&my_queue);
+	// dequeue(&my_queue);
+	// printqueue(&my_queue);
+	// dequeue(&my_queue);
+	// printqueue(&my_queue);
 	//dequeue(&my_queue);
 	//dequeue(&my_queue);
 	//printf("\nhead : %d\n", my_queue.head->process_id);

@@ -51,7 +51,7 @@ pid32	getfirst(struct queue *q);
 pid32	getlast(struct queue *q);
 pid32	remove(pid32 pid, struct queue *q);
 pid32	dequeue(struct queue *q);
-pid32	enqueue(pid32 pid, struct queue *q);
+pid32	enqueue(pid32 pid, struct queue *q, int32 key);
 
 struct queue	*newqueue();
 struct qentry	*getbypid(pid32 pid, struct queue *q);
