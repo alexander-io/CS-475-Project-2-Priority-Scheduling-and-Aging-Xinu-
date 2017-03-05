@@ -93,6 +93,7 @@ pid32	create(void *procaddr, uint32 ssize, pri16 priority, char *name, uint32 na
 	*--saddr = 0;		/* %edi */
 	*pushsp = (unsigned long) (prptr->prstkptr = (char *)saddr);
 	restore(mask);
+	// kprintf("\ndone with create()\n");
 	return pid;
 }
 

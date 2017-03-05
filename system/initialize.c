@@ -85,10 +85,13 @@ void	nulluser(void)
 	//schedule the above processes
 	while (TRUE)
 	{
+		// kprintf("\nabout to check if readyqueue is nonempty\n");
 		if (nonempty(readyqueue))
 		{
+			// kprintf("\nonempty(readyqueue) evaluated to true\n");
 			//everytime resched() is called, it pulls the next process off the ready queue
 			resched();
+			
 		}
 	}
 }

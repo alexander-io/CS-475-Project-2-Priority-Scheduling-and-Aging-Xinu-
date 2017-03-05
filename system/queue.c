@@ -19,12 +19,13 @@ void	printqueue(struct queue *q)
 	}
 	struct qentry *toPrint = q->head;
 
-	kprintf("[(pid=p%d)",toPrint->process_id);
+	kprintf("[(pid=p%d,%d)",toPrint->process_id, toPrint->key);
 
 	toPrint = toPrint->next;
 	while(toPrint != NULL){
 
-		kprintf(", (pid=p%d)",toPrint->process_id);
+		// kprintf(", (pid=p%d)",toPrint->process_id);
+		kprintf("[(pid=p%d,%d)",toPrint->process_id, toPrint->key);
 
 		toPrint = toPrint->next;
 	}
@@ -83,6 +84,7 @@ bool8	isfull(struct queue *q)
  */
 pid32 enqueue(pid32 pid, struct queue *q, int32 key)
 {
+	
         // check if queue is full and if pid is illegal, and return SYSERR if either is true
 	if (isfull(q) || isbadpid(pid)){
 	//if (isfull(q)){
@@ -123,17 +125,25 @@ pid32 enqueue(pid32 pid, struct queue *q, int32 key)
 					toCompare->prev->next = new_qentry;
 					toCompare->prev = new_qentry;
 				}
+				break;
 			}
 			// if we're at the last entry
 			if (toCompare == q-> tail && key <= q->tail->key) {
 				// TODO - new_qentry becomes new tail
+				// kpintf("\n\n");
 				new_qentry->prev = q->tail;
 				q->tail->next = new_qentry;
 				q->tail = new_qentry;
-			}
+				toCompare = toCompare->next;
+			} 
+
 			toCompare = toCompare->next;
+			
+			
 		}
 	}
+	// kprintf("\nabout to print queue at end of enqueue()\n");
+	
 	q->size++;
 	return pid;
 }
