@@ -51,6 +51,9 @@ pid32	create(void *procaddr, uint32 ssize, pri16 priority, char *name, uint32 na
 	// initialize the priority of the process entry
 	prptr->prprio = priority;
 
+	// initialize the priority to assign to the process
+	prptr->iniprprio = priority;
+
 	// set up initial device descriptors for the shell
 	prptr->prdesc[0] = CONSOLE;	// stdin  is CONSOLE device
 	prptr->prdesc[1] = CONSOLE;	// stdout is CONSOLE device

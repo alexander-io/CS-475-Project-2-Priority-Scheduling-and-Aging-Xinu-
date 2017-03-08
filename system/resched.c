@@ -20,6 +20,19 @@ void	resched(void)		// assumes interrupts are disabled
 	}
 
 
+	if (AGING){
+		// loop through ready queue, decrememnt every entry's priority (age)
+		// except for the null process
+		// except for the most recently preempted process
+		// except for the process that was most recently selected for scheduling
+		int i = 0;
+		while (i < readyqueue->size){
+			readyqueue[i]->prprio--;
+			i++;
+		}
+	}
+
+
 	// Point to process table entry for the current (old) process
 	ptold = &proctab[currpid];
 
@@ -31,6 +44,8 @@ void	resched(void)		// assumes interrupts are disabled
 		enqueue(currpid, readyqueue, ptold->prprio);
 	}
 	
+
+
 	pid32 id = dequeue(readyqueue);	
 	// kprintf("\njust called dequeue on the process in resched.c, pid : %d\n", id);
 	//  dequeue next process off the ready queue and point ptnew to it
