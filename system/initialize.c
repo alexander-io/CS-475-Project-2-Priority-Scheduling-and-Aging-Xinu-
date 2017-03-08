@@ -91,6 +91,8 @@ void	nulluser(void)
 			// kprintf("\nonempty(readyqueue) evaluated to true\n");
 			//everytime resched() is called, it pulls the next process off the ready queue
 			resched();
+
+			// decrement the priority (age) of all 
 			
 		}
 	}

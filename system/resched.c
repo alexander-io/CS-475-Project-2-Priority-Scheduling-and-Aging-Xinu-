@@ -8,6 +8,7 @@
  */
 void	resched(void)		// assumes interrupts are disabled
 {
+	// kprintf("\ncurrpid start : %d\n", currpid);
 	struct procent *ptold;	// ptr to table entry for old process
 	struct procent *ptnew;	// ptr to table entry for new process
 
@@ -20,17 +21,7 @@ void	resched(void)		// assumes interrupts are disabled
 	}
 
 
-	if (AGING){
-		// loop through ready queue, decrememnt every entry's priority (age)
-		// except for the null process
-		// except for the most recently preempted process
-		// except for the process that was most recently selected for scheduling
-		int i = 0;
-		while (i < readyqueue->size){
-			readyqueue[i]->prprio--;
-			i++;
-		}
-	}
+	
 
 
 	// Point to process table entry for the current (old) process
@@ -41,23 +32,61 @@ void	resched(void)		// assumes interrupts are disabled
 	if (ptold->prstate == PR_CURR){
 		// kprintf("\nptold->orstate == PR_CURR, evaluated to true\n");
 		ptold->prstate = PR_READY;
-		enqueue(currpid, readyqueue, ptold->prprio);
+		enqueue(currpid, readyqueue, ptold->iniprprio);
+
+
 	}
 	
 
 
-	pid32 id = dequeue(readyqueue);	
+	// kprintf("\ncurrpid before dqeue : %d\n", currpid);
+	pid32 id = dequeue(readyqueue);
+	// kprintf("\ncurrpid after dqeue : %d\n", currpid);
 	// kprintf("\njust called dequeue on the process in resched.c, pid : %d\n", id);
 	//  dequeue next process off the ready queue and point ptnew to it
 	ptnew = &proctab[id];
 	
 	//  change its state to "current" (i.e., running)
 	ptnew->prstate = PR_CURR;
+
+	// decrement priority
+	if (AGING){
+		// loop through ready queue, decrememnt every entry's priority (age)
+		
+		// except for the most recently preempted process
+		// except for the process that was most recently selected for scheduling
+		// int i = 0;
+		struct qentry *tmp = readyqueue->head;
+
+		// while (i < readyqueue->size){
+		while (tmp != NULL){
+
+			// krpintf("\ncurrpid : %d\n", currpid);
+
+			// except for the null process && except for the most recently preempted process && 
+			if (tmp->process_id != NULLPROC && tmp->process_id != currpid){
+
+				// decrement the priority of of the process entry
+				tmp->key++;
+
+
+			}
+			tmp = tmp->next;
+			// i++;
+		}
+		// kprintf("\nprinting queue from resched.c : \n");
+		// printqueue(readyqueue);
+	}
+
 	//  set currpid to reflect new running process' PID
 	currpid = id;
 
+	// kprintf("\ncurrpid before context switch : %d\n", currpid);
 	// Context switch to next ready process
 	ctxsw(&ptold->prstkptr, &ptnew->prstkptr);
+	// kprintf("\ncurrpid after context switch : %d\n", currpid);
+
+	// kprintf("\ncurrpid end : %d\n", currpid);
 
 	// Old process returns here when resumed
 	return;

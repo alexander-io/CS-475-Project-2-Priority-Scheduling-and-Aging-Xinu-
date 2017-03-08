@@ -84,6 +84,7 @@ bool8	isfull(struct queue *q)
  */
 pid32 enqueue(pid32 pid, struct queue *q, int32 key)
 {
+	// printqueue(q);
 	
         // check if queue is full and if pid is illegal, and return SYSERR if either is true
 	if (isfull(q) || isbadpid(pid)){
