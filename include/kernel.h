@@ -65,6 +65,10 @@ typedef	int32	status;		/* returned status value (OK/SYSERR)	*/
 
 #define	NULLSTK		16384	/* stack size for null process		*/
 
+// define kernel cofiguration parameter of aging,
+// when set to true, the scheduler implements the aging policy
+#define AGING TRUE
+
 /* Prototypes of I/O functions used throughout the kernel */
 
 syscall	kprintf(char *fmt, ...);
