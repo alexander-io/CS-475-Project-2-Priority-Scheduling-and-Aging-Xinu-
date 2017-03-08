@@ -83,18 +83,15 @@ bool8	isfull(struct queue *q)
  * @return pid on success, SYSERR otherwise
  */
 pid32 enqueue(pid32 pid, struct queue *q, int32 key)
-{
-	// printqueue(q);
-	
-        // check if queue is full and if pid is illegal, and return SYSERR if either is true
+{	
+    // check if queue is full and if pid is illegal, and return SYSERR if either is true
 	if (isfull(q) || isbadpid(pid)){
-	//if (isfull(q)){
 		return SYSERR;
 	}
 
-        // allocate space on heap for a new QEntry
+    // allocate space on heap for a new QEntry
 	struct qentry *new_qentry = malloc(sizeof(struct qentry));
-        // initialize the new QEntry
+    // initialize the new QEntry
 	new_qentry->process_id = pid;
 	new_qentry->key = key;
 
@@ -115,12 +112,12 @@ pid32 enqueue(pid32 pid, struct queue *q, int32 key)
 				// we've found that they key needs to be inserted...
 				// check if toCompare is head
 				if (toCompare == q->head){
-					// TODO - insert new_qentry into head
+					// insert new_qentry into head
 					new_qentry->next = q->head;
 					q->head->prev = new_qentry;
 					q->head = new_qentry; 
 				} else {
-					// TODO - insert new_qentry into body
+					// insert new_qentry into body
 					new_qentry->next = toCompare;
 					new_qentry->prev = toCompare->prev;
 					toCompare->prev->next = new_qentry;
@@ -130,21 +127,15 @@ pid32 enqueue(pid32 pid, struct queue *q, int32 key)
 			}
 			// if we're at the last entry
 			if (toCompare == q-> tail && key <= q->tail->key) {
-				// TODO - new_qentry becomes new tail
-				// kpintf("\n\n");
+				// new_qentry becomes new tail
 				new_qentry->prev = q->tail;
 				q->tail->next = new_qentry;
 				q->tail = new_qentry;
 				toCompare = toCompare->next;
 			} 
-
 			toCompare = toCompare->next;
-			
-			
 		}
 	}
-	// kprintf("\nabout to print queue at end of enqueue()\n");
-	
 	q->size++;
 	return pid;
 }
@@ -157,7 +148,7 @@ pid32 enqueue(pid32 pid, struct queue *q, int32 key)
  */
 pid32 dequeue(struct queue *q)
 {
-        // return EMPTY if queue is empty
+    // return EMPTY if queue is empty
 	if (isempty(q)){
 		return EMPTY;	
 	}
@@ -166,7 +157,7 @@ pid32 dequeue(struct queue *q)
 	struct qentry *old_head = q->head;
 	pid32 return_pid = old_head->process_id;
 			
-        // unlink the head entry from the rest
+    // unlink the head entry from the rest
 	if (q->size == 1){
 		q->tail = NULL;
 		q->head = NULL;
@@ -176,7 +167,7 @@ pid32 dequeue(struct queue *q)
 		q->head->prev = NULL;
 	}
 
-        // free up the space on the heap
+    // free up the space on the heap
 	free(old_head, sizeof(old_head));
 	q->size--;
 	return return_pid;
@@ -193,7 +184,6 @@ struct qentry *getbypid(pid32 pid, struct queue *q)
 {
 	// return NULL if queue is empty or if an illegal pid is given
 	if (isempty(q) || isbadpid(pid)){
-	//if (isempty(q)){
 		return NULL;
 	}
 
@@ -238,7 +228,7 @@ pid32	getlast(struct queue *q)
 	struct qentry *old_tail = q->tail;
 	pid32 return_pid = old_tail->process_id;
 			
-        //unlink the tail entry from the rest
+    //unlink the tail entry from the rest
 	if (q->size == 1){
 		q->tail = NULL;
 		q->head = NULL;
@@ -248,7 +238,7 @@ pid32	getlast(struct queue *q)
 		q->tail->next = NULL;
 	}
 
-        //free up the space on the heap
+    //free up the space on the heap
 	free(old_tail, sizeof(old_tail));
 	q->size--;
 	return return_pid;

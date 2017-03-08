@@ -8,14 +8,11 @@
  */
 void	resched(void)		// assumes interrupts are disabled
 {
-	// kprintf("\ncurrpid start : %d\n", currpid);
 	struct procent *ptold;	// ptr to table entry for old process
 	struct procent *ptnew;	// ptr to table entry for new process
 
-	// kprintf("\nabout to check Defer.ndfefers > 0\n");
 	// If rescheduling is deferred, record attempt and return
 	if (Defer.ndefers > 0) {
-		// kprintf("\nDefer.ndefers > 0 evaluated to true\n");
 		Defer.attempt = TRUE;
 		return;
 	}
