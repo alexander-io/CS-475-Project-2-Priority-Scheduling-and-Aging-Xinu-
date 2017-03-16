@@ -40,5 +40,9 @@ int	main(uint32 argc, uint32 *argv)
 	ready(create((void*) printpid, INITSTK, 5, "PRINTER-D", 2, 1, args1++), FALSE);
 	ready(create((void*) bigargs, INITSTK, 5, "BIGARGS", 2, 6, args2), FALSE);
 
+	// test suite processes : 
+	ready(create((void*) printpid, INITSTK, 1, "TestSuite-1", 2, 1, args1++), FALSE);
+	ready(create((void*) printpid, INITSTK, 5, "TestSuite-2", 2, 1, args1++), FALSE);
+	ready(create((void*) printpid, INITSTK, 10, "TestSuite-3", 2, 1, args1++), FALSE);
 	return 0;
 }
